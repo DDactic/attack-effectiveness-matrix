@@ -104,6 +104,8 @@ The base ratings come from a mix of:
 
 The matrix is **descriptive, not prescriptive**. A `mitigated` rating against `cloud_cdn / tuned` does not mean every cloud CDN at a tuned config level mitigates the vector; it means the architectural class, configured at a typical level of effort, has been observed to mitigate it across the engagements we ran. Real outcomes depend on the specific product, its tier, and traffic baselines.
 
+See [KNOWN_GAPS.md](KNOWN_GAPS.md) for an explicit inventory of dimensions v1.0 does not capture (always-on vs on-demand, API-controllability, origin scaling class, private tunnels, IPv6 reachability, behavioral baseline training time, and others). PRs adding these as explicit columns are welcome.
+
 ## How DDactic uses it
 
 The matrix is the kernel of our test plan generator. When a customer's architecture is detected during a scan (cloud CDN visible, or hybrid with an on-prem appliance, or unprotected origin), the scan picks the subset of vectors rated `deadly` or `degraded` for that architecture and generates a prioritized test plan. Vectors rated `blocked` or `mitigated` are skipped to keep the plan honest.
