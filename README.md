@@ -24,12 +24,16 @@ The unit of analysis is the architectural class, not a specific product. The dat
   "architectures": { /* 6 categories */ },
   "config_levels": { /* default | tuned | hardened */ },
   "vectors": { /* 213 attack vectors */ },
-  "_modifiers_note": "...",                // pointer to the framework held back from public release
+  "architecture_modifiers": { /* 14 defender-side modifier categories, public in v3.1 */ },
+  "_arch_modifier_computation": { /* how arch modifier shifts compose */ },
+  "_modifiers_note": "...",                // pointer to attacker-side framework held back from public release
   "_summary": { /* counts and key insights */ }
 }
 ```
 
-> **Modifier framework not in public release.** The full matrix internally has `technique_modifiers` (cache-bust, range abuse, image resize inflation, pagination abuse) and `strategy_modifiers` (browser fingerprint rotation, script-kiddie defaults, abnormal posture) that compose with the base ratings. Those compose-rules are the most operationally sensitive part of the matrix and stay private; the structural per-cell ratings below are the public artifact. Contact DDactic if you need the modifier framework for academic or defensive work under NDA.
+> **Defender-side modifiers (`architecture_modifiers`) are now public in v3.1.** They capture deployment-time choices like always-on vs on-demand, API controllability, origin scaling class, rate-limit basis, private tunnels, IPv6 parity, and behavioral baseline maturity. See the section below.
+>
+> **Attacker-side modifiers (`technique_modifiers` and `strategy_modifiers`) remain held back.** They describe request-shaping tricks and traffic-fingerprint postures at a level closer to a playbook than a research dataset. Contact DDactic for the attacker-side framework under NDA.
 
 ### Architecture classes
 
@@ -83,16 +87,41 @@ The unit of analysis is the architectural class, not a specific product. The dat
 }
 ```
 
-### Modifiers (referenced, not included)
+### Architecture modifiers (defender-side, public in v3.1)
 
-The full matrix has two orthogonal axes that shift the base effectiveness up or down:
+Real architectures have more dimensions than `cloud_cdn / hardened`. The `architecture_modifiers` section captures 14 deployment-time choices that shift the base effectiveness:
 
-- **Technique modifiers** describe the request-shaping trick (cache busting, range abuse, image resize inflation, pagination abuse, etc).
+| Modifier | What it captures |
+|---|---|
+| `engagement_mode` | always-on inline vs always-on with escalation vs on-demand BGP redirect |
+| `api_controllability` | how reachable the `tuned`/`hardened` cells are operationally (Terraform/IaC vs click-ops) |
+| `integration_class` | unified-edge vs bolted-on stacks (each integration boundary is its own attack surface) |
+| `origin_scaling_class` | serverless / container / ALB-fronted / API-gateway-fronted / VM (each shifts request-flood and connection-flood ratings) |
+| `rate_limit_basis` | per-IP / per-subnet / per-API-key / per-session / per-authenticated-user |
+| `cost_aware_throttling` | per-endpoint cost budgets, GraphQL cost analysis |
+| `origin_ip_exposure` | public origin / IP-allowlisted / private tunnel (CF Tunnel, PrivateLink) |
+| `caching_layers` | none / CDN edge / + shield / + app-cache |
+| `ipv6_origin_protection` | dual-stack protected vs IPv4-only CDN with reachable IPv6 origin |
+| `regional_pop_density` | thin / medium / dense at the attack source region |
+| `engagement_latency_seconds` | numeric metadata; matters for pulse-wave attacks shorter than the engagement window |
+| `baseline_maturity` | behavioral baseline trained for <1w / 1-2w / 2+w |
+| `policy_statefulness` | stateless / stateful-session / stateful-user WAF policy |
+| `human_response_latency` | numeric metadata; what response time the hardened ratings assume |
+
+Each modifier has options with per-option shifts on the 4-point scale (`deadly=0, degraded=1, mitigated=2, blocked=3`). The composition rule lives in `_arch_modifier_computation`:
+
+```
+effective_rating = clamp(base + sum(applicable_arch_modifier_shifts), 0, 3)
+```
+
+### Attacker-side modifiers (held back)
+
+The full matrix internally also has two attacker-side axes that shift base effectiveness:
+
+- **Technique modifiers** describe the request-shaping trick (cache busting, range abuse, image resize inflation, pagination abuse).
 - **Strategy modifiers** describe the traffic-fingerprint posture (script-kiddie defaults, valid-browser rotation, fingerprint rotation, abnormal/chaotic).
 
-Each modifier has a per-architecture shift value on a 4-point scale, and a composition rule applies the shifts on top of the base rating.
-
-The modifier framework is not in this public release. The structural per-vector ratings are; the composition rules and per-modifier shifts stay private because they describe specific bypass behaviour at a level closer to a playbook than a research dataset. The companion taxonomy ([`ddactic/ddos-attack-taxonomy`](https://github.com/DDactic/ddos-attack-taxonomy)) covers technique and strategy concepts at the level of mitigation guidance for defenders.
+These are not in the public release because they describe specific bypass behaviour at a level closer to a playbook than a research dataset. The companion taxonomy ([`ddactic/ddos-attack-taxonomy`](https://github.com/DDactic/ddos-attack-taxonomy)) covers technique and strategy concepts at the level of mitigation guidance for defenders.
 
 ## Methodology
 

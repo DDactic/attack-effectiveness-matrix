@@ -1,8 +1,30 @@
-# Known Gaps (v1.0)
+# Known Gaps
 
-The matrix is a useful first cut, not the final word. These dimensions are either missing or only implicitly captured in v1.0. They are explicit candidates for v2.0 and PRs that formalize any of them are welcome.
+The matrix is research output, not a finished product. This file is the canonical inventory of what each version does and does not capture.
 
-This file exists because open research is more trustworthy when it admits its limits than when it pretends to be complete.
+**Status legend:** ✅ addressed in stated version | 🟡 partial coverage | 🔴 still open | ⚪ deliberately out-of-scope
+
+| Gap | v3.0 (initial) | v3.1 (current) |
+|---|---|---|
+| 1. Always-on vs on-demand DDoS scrubbing | 🔴 | ✅ via `architecture_modifiers.engagement_mode` |
+| 2. API-controllability of the protection product | 🔴 | ✅ via `architecture_modifiers.api_controllability` |
+| 3. CDN-native unified vs bolted-on stacks | 🟡 implicit | ✅ via `architecture_modifiers.integration_class` |
+| 4. Origin scaling class (serverless/container/ALB/API-GW/VM) | 🔴 | ✅ via `architecture_modifiers.origin_scaling_class` |
+| 5. Account-based rate limiting (per-API-key, per-user) | 🟡 implicit | ✅ via `architecture_modifiers.rate_limit_basis` |
+| 6. Expensive-request tagging / per-endpoint cost budgets | 🔴 | ✅ via `architecture_modifiers.cost_aware_throttling` |
+| 7. Private tunnels (CF Tunnel, PrivateLink, etc.) | 🟡 implicit | ✅ via `architecture_modifiers.origin_ip_exposure` |
+| 8. Caching architecture (edge / shield / app / Varnish) | 🟡 implicit (private modifier) | ✅ via `architecture_modifiers.caching_layers` |
+| 9. IPv6 vs IPv4 reachability | 🔴 | ✅ via `architecture_modifiers.ipv6_origin_protection` |
+| 10. Geographic / Anycast PoP distribution | 🔴 | ✅ via `architecture_modifiers.regional_pop_density` |
+| 11. Mitigation engagement latency (seconds) | 🔴 | ✅ via `architecture_modifiers.engagement_latency_seconds` |
+| 12. Behavioral baseline training time | 🔴 | ✅ via `architecture_modifiers.baseline_maturity` |
+| 13. Customer billing tier within a vendor | ⚪ | ⚪ Out of scope. Internal DDactic engagements map per-vendor billing tiers to public matrix cells. |
+| 14. Stateful vs stateless WAF policies | 🔴 | ✅ via `architecture_modifiers.policy_statefulness` |
+| 15. Logging and observability latency | 🔴 | ✅ via `architecture_modifiers.human_response_latency` |
+
+**Outcome:** v3.1 closed 14 of 15 gaps with the new defender-side `architecture_modifiers` section. The fifteenth (customer billing tier) is deliberately out-of-scope for the public matrix because it ties to vendor pricing and would push the matrix toward per-vendor scoring, which is exactly what we excluded by design.
+
+The detailed gap-by-gap discussion below is preserved as the historical record so contributors can see what motivated each modifier in v3.1.
 
 ---
 
