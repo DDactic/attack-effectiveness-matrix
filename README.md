@@ -89,6 +89,8 @@ The unit of analysis is the architectural class, not a specific product. The dat
 
 ### Architecture modifiers (defender-side, public in v3.1)
 
+> **Status: scaffolded, not validated.** The data model and composition rule are stable. The numeric shifts attached to each option are reasoned defaults derived from architectural analysis and engagement experience, **not empirically measured** against all 213 vectors. Treat the relative ordering of shifts as more reliable than the absolute values, and confirm any production-critical claim with direct testing. See [KNOWN_GAPS.md](KNOWN_GAPS.md#validation-status-important) for the full validation status and what completing it would require.
+
 Real architectures have more dimensions than `cloud_cdn / hardened`. The `architecture_modifiers` section captures 14 deployment-time choices that shift the base effectiveness:
 
 | Modifier | What it captures |

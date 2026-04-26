@@ -2,27 +2,48 @@
 
 The matrix is research output, not a finished product. This file is the canonical inventory of what each version does and does not capture.
 
-**Status legend:** ✅ addressed in stated version | 🟡 partial coverage | 🔴 still open | ⚪ deliberately out-of-scope
+**Status legend:** ✅ addressed and validated | 🟡 scaffolded (data model in place, shift values are reasoned defaults pending empirical validation) | 🔴 still open | ⚪ deliberately out-of-scope
 
 | Gap | v3.0 (initial) | v3.1 (current) |
 |---|---|---|
-| 1. Always-on vs on-demand DDoS scrubbing | 🔴 | ✅ via `architecture_modifiers.engagement_mode` |
-| 2. API-controllability of the protection product | 🔴 | ✅ via `architecture_modifiers.api_controllability` |
-| 3. CDN-native unified vs bolted-on stacks | 🟡 implicit | ✅ via `architecture_modifiers.integration_class` |
-| 4. Origin scaling class (serverless/container/ALB/API-GW/VM) | 🔴 | ✅ via `architecture_modifiers.origin_scaling_class` |
-| 5. Account-based rate limiting (per-API-key, per-user) | 🟡 implicit | ✅ via `architecture_modifiers.rate_limit_basis` |
-| 6. Expensive-request tagging / per-endpoint cost budgets | 🔴 | ✅ via `architecture_modifiers.cost_aware_throttling` |
-| 7. Private tunnels (CF Tunnel, PrivateLink, etc.) | 🟡 implicit | ✅ via `architecture_modifiers.origin_ip_exposure` |
-| 8. Caching architecture (edge / shield / app / Varnish) | 🟡 implicit (private modifier) | ✅ via `architecture_modifiers.caching_layers` |
-| 9. IPv6 vs IPv4 reachability | 🔴 | ✅ via `architecture_modifiers.ipv6_origin_protection` |
-| 10. Geographic / Anycast PoP distribution | 🔴 | ✅ via `architecture_modifiers.regional_pop_density` |
-| 11. Mitigation engagement latency (seconds) | 🔴 | ✅ via `architecture_modifiers.engagement_latency_seconds` |
-| 12. Behavioral baseline training time | 🔴 | ✅ via `architecture_modifiers.baseline_maturity` |
+| 1. Always-on vs on-demand DDoS scrubbing | 🔴 | 🟡 scaffolded as `architecture_modifiers.engagement_mode` |
+| 2. API-controllability of the protection product | 🔴 | 🟡 scaffolded as `architecture_modifiers.api_controllability` |
+| 3. CDN-native unified vs bolted-on stacks | 🟡 implicit | 🟡 scaffolded as `architecture_modifiers.integration_class` |
+| 4. Origin scaling class (serverless/container/ALB/API-GW/VM) | 🔴 | 🟡 scaffolded as `architecture_modifiers.origin_scaling_class` |
+| 5. Account-based rate limiting (per-API-key, per-user) | 🟡 implicit | 🟡 scaffolded as `architecture_modifiers.rate_limit_basis` |
+| 6. Expensive-request tagging / per-endpoint cost budgets | 🔴 | 🟡 scaffolded as `architecture_modifiers.cost_aware_throttling` |
+| 7. Private tunnels (CF Tunnel, PrivateLink, etc.) | 🟡 implicit | 🟡 scaffolded as `architecture_modifiers.origin_ip_exposure` |
+| 8. Caching architecture (edge / shield / app / Varnish) | 🟡 implicit (private modifier) | 🟡 scaffolded as `architecture_modifiers.caching_layers` |
+| 9. IPv6 vs IPv4 reachability | 🔴 | 🟡 scaffolded as `architecture_modifiers.ipv6_origin_protection` |
+| 10. Geographic / Anycast PoP distribution | 🔴 | 🟡 scaffolded as `architecture_modifiers.regional_pop_density` |
+| 11. Mitigation engagement latency (seconds) | 🔴 | 🟡 scaffolded as `architecture_modifiers.engagement_latency_seconds` |
+| 12. Behavioral baseline training time | 🔴 | 🟡 scaffolded as `architecture_modifiers.baseline_maturity` |
 | 13. Customer billing tier within a vendor | ⚪ | ⚪ Out of scope. Internal DDactic engagements map per-vendor billing tiers to public matrix cells. |
-| 14. Stateful vs stateless WAF policies | 🔴 | ✅ via `architecture_modifiers.policy_statefulness` |
-| 15. Logging and observability latency | 🔴 | ✅ via `architecture_modifiers.human_response_latency` |
+| 14. Stateful vs stateless WAF policies | 🔴 | 🟡 scaffolded as `architecture_modifiers.policy_statefulness` |
+| 15. Logging and observability latency | 🔴 | 🟡 scaffolded as `architecture_modifiers.human_response_latency` |
 
-**Outcome:** v3.1 closed 14 of 15 gaps with the new defender-side `architecture_modifiers` section. The fifteenth (customer billing tier) is deliberately out-of-scope for the public matrix because it ties to vendor pricing and would push the matrix toward per-vendor scoring, which is exactly what we excluded by design.
+**Outcome:** v3.1 introduced the data model and composition rule for 14 of 15 gaps. The fifteenth (customer billing tier) is deliberately out-of-scope. None of the 14 are validated yet, hence 🟡 not ✅.
+
+## Validation status (important)
+
+**The shift values in `architecture_modifiers` are reasoned defaults, not empirically validated measurements.** A reader using the matrix should treat them accordingly:
+
+- The data model and composition rule (`effective = clamp(base + sum(shifts), 0, 3)`) are stable.
+- The list of options under each modifier (e.g., `serverless` / `container_kubernetes` / `alb_fronted` / `api_gateway_fronted` / `vm_or_metal` for `origin_scaling_class`) is stable.
+- The numeric shifts attached to each option are derived from architectural reasoning and DDactic engagement experience, but they have not been independently re-measured against the 213 vectors x 6 base architectures.
+- Per-vector overrides (where a single modifier shifts M-15 by +2 but M-19 by +1) are NOT in v3.1. v3.1 applies one shift across all `affects_mechanisms` listed for each option.
+
+**What validation would require.** A test campaign that, for each modifier x option x affected vector x base architecture combination, runs the vector under the documented configuration and records the observed effectiveness. With 14 modifiers, ~3-5 options each, ~5 affected vectors per modifier, and 6 base architectures, that is on the order of 5,000-15,000 cells to measure. A realistic plan covers a small high-value subset (origin_ip_exposure, rate_limit_basis, origin_scaling_class) first.
+
+**What this means for downstream users.** The `architecture_modifiers` section is useful for:
+
+- Building a deployment-aware test plan (the modifier values are good enough to prioritize).
+- Communicating architecture choices to procurement / leadership (the named options are precise).
+- Comparing two deployments against the same vector set (the relative ordering of shifts is more reliable than the absolute values).
+
+The section is NOT yet a substitute for direct testing. A `mitigated` rating after applying modifiers should still be confirmed empirically before claiming production resilience.
+
+PRs that contribute validated shift values (with a test methodology and reproducible results) are the highest-priority contribution this repo can receive.
 
 The detailed gap-by-gap discussion below is preserved as the historical record so contributors can see what motivated each modifier in v3.1.
 
