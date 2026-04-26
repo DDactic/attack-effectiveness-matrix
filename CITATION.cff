@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: DDactic Attack Effectiveness Matrix
+message: >-
+  If you use this dataset in academic work, please cite it using the
+  metadata below.
+type: dataset
+authors:
+  - family-names: David
+    given-names: Stav
+    affiliation: DDactic
+    email: stav@ddactic.net
+  - name: DDactic Security Research
+    website: 'https://ddactic.net'
+repository-code: 'https://github.com/DDactic/attack-effectiveness-matrix'
+url: 'https://ddactic.net'
+abstract: >-
+  A vendor-neutral dataset that maps 213 documented DDoS attack vectors
+  against 6 protection architectures at 3 configuration levels, with
+  qualitative effectiveness ratings (deadly / degraded / mitigated /
+  blocked) and architectural reasoning for each cell. Includes generic
+  technique and strategy modifiers that compose with the base ratings.
+keywords:
+  - ddos
+  - cybersecurity
+  - network-security
+  - attack-taxonomy
+  - cdn
+  - waf
+  - resilience-testing
+license: CC-BY-4.0
+license-url: 'https://creativecommons.org/licenses/by/4.0/'
+version: '3.0'
+date-released: '2026-04-26'

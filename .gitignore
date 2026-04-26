@@ -1,0 +1,17 @@
+# Internal copy of the unsanitized matrix lives here for re-running scripts/sanitize.py.
+# Never commit it.
+private/
+PRIVATE_OMITTED.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.pytest_cache/
+
+# Editors
+.idea/
+.vscode/
+*.swp
+.DS_Store
